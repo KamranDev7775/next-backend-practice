@@ -7,11 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id         String   @id @default(cuid())
   name       String
+  lastname String @default("")
   email      String   @unique
   password   String
+  role       Role     @default(USER)
   isLoggedIn Boolean  @default(false)
+  otp        String?
+  otpExpiry  DateTime?
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt @default(now())
 }
