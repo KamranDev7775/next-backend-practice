@@ -25,3 +25,29 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt @default(now())
 }
+
+enum Status {
+  ENABLE
+  DISABLE
+}
+
+model Team {
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique
+  phonenumber     String
+  description     String
+
+  currentsalary   Float
+  cnic            String   @unique
+  address         String
+
+  status          Status   @default(ENABLE)
+
+  image           String?  // optional
+  uploaddocument  String?  // optional
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
