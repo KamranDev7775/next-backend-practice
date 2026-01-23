@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "../../../../../src/lib/auth/middleware";
 import { validateTeamData } from "../../../../../src/lib/validation/teamValidation";
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { Status } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   try {
@@ -101,7 +100,7 @@ export async function POST(req: NextRequest) {
         currentsalary: body.currentsalary,
         cnic: body.cnic,
         address: body.address,
-        status: (body.status as Status) || Status.ENABLE,
+        status: (body.status as "ENABLE" | "DISABLE") || "ENABLE",
         image: imagePath,
         uploaddocument: documentPath
       }
