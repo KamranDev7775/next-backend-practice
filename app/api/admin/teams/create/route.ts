@@ -2,7 +2,7 @@ import { prisma } from "../../../../../src/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "../../../../../src/lib/auth/middleware";
 import { validateTeamData } from "../../../../../src/lib/validation/teamValidation";
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import cloudinary from "../../../../../src/lib/cloudinary";
 
 export async function POST(req: NextRequest) {
   try {
@@ -70,25 +70,30 @@ export async function POST(req: NextRequest) {
     let imagePath = null;
     let documentPath = null;
 
-    // Create uploads directory if it doesn't exist
-    if (!existsSync('public/uploads')) {
-      mkdirSync('public/uploads', { recursive: true });
-    }
-
-    // Handle image upload
+    // Handle image upload to Cloudinary
     if (imageFile && imageFile.size > 0) {
       const imageBuffer = await imageFile.arrayBuffer();
-      const imageName = `image-${Date.now()}-${imageFile.name}`;
-      writeFileSync(`public/uploads/${imageName}`, Buffer.from(imageBuffer));
-      imagePath = `${req.nextUrl.origin}/uploads/${imageName}`;
+      const base64 = Buffer.from(imageBuffer).toString('base64');
+      const dataURI = `data:${imageFile.type};base64,${base64}`;
+      
+      const result = await cloudinary.uploader.upload(dataURI, {
+        folder: 'team-images',
+        resource_type: 'image'
+      });
+      imagePath = result.secure_url;
     }
 
-    // Handle document upload
+    // Handle document upload to Cloudinary
     if (documentFile && documentFile.size > 0) {
       const docBuffer = await documentFile.arrayBuffer();
-      const docName = `doc-${Date.now()}-${documentFile.name}`;
-      writeFileSync(`public/uploads/${docName}`, Buffer.from(docBuffer));
-      documentPath = `${req.nextUrl.origin}/uploads/${docName}`;
+      const base64 = Buffer.from(docBuffer).toString('base64');
+      const dataURI = `data:${documentFile.type};base64,${base64}`;
+      
+      const result = await cloudinary.uploader.upload(dataURI, {
+        folder: 'team-documents',
+        resource_type: 'raw'
+      });
+      documentPath = result.secure_url;
     }
 
     const team = await prisma.team.create({
