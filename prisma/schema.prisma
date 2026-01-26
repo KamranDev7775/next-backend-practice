@@ -51,3 +51,12 @@ model Team {
   updatedAt       DateTime @updatedAt
 }
 
+model Stats {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  value       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+

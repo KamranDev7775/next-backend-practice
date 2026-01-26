@@ -5,10 +5,7 @@ import { NextRequest } from "next/server";
 export async function verifyToken(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   // const cookieToken = req.cookies.get("accessToken")?.value; // Disable cookie for testing
-  const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
-  
-  console.log("Token check:", { authHeader, token });
-  
+  const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null; 
   if (!token) {
     console.log("No token found, throwing error");
     throw new Error("Token required");
